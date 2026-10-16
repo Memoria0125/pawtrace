@@ -1,0 +1,283 @@
+// PawTrace 爪迹 — 数据库模型（Prisma + MySQL）
+// 设计依据：deliverables/PawTrace-PRD-v1.1.md 第五、九章
+// 同步策略：updated_at + version，last-write-wins（PRD 9.5 离线同步降级为草稿版）
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- 枚举 ----------
+
+enum AnimalType {
+  CAT // 猫
+  DOG // 狗
+}
+
+enum SterilizationStatus {
+  UNKNOWN        // 待确认
+  STERILIZED     // 已绝育（剪耳/耳标）
+  NOT_STERILIZED // 未绝育
+}
+
+enum HealthStatus {
+  HEALTHY  // 健康
+  THIN     // 偏瘦
+  INJURED  // 受伤
+  SICK     // 疑似生病
+  DECEASED // 已离世（温柔纪念状态）
+}
+
+enum RecordType {
+  APPEARANCE // 外貌变化
+  LOCATION   // 点位更新
+  HEALTH     // 健康状态
+  FEEDING    // 投喂记录
+  SEASON     // 季节变化
+  DEVICE     // 硬件感应记录（F4.5 预留）
+}
+
+enum Season {
+  SPRING
+  SUMMER
+  AUTUMN
+  WINTER
+}
+
+enum SpaceRole {
+  OWNER
+  MEMBER
+}
+
+enum JoinRequestStatus {
+  PENDING  // 待审批
+  APPROVED // 已通过
+  REJECTED // 已拒绝
+}
+
+// ---------- 用户（2026-10-06 起：手机号+密码账号体系，注册即强制绑定手机号；deviceId 仅历史演示数据保留）----------
+
+model User {
+  id           String   @id @default(cuid())
+  deviceId     String?  @unique // 历史设备匿名登录标识（账号体系上线后不再用于登录）
+  phone        String?  @unique // 注册即绑定（唯一）
+  passwordHash String?  // scrypt(salt:hash)；seed 演示账号与注册用户都有，历史匿名数据可能为空
+  nickname     String   @default("观察者")
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  profiles      Profile[]         @relation("Creator")
+  records       Record[]          @relation("Author")
+  observations  Observation[]
+  spaces        SpaceMember[]
+  ownedSpaces   Space[]           @relation("SpaceOwner")
+  joinRequests  SpaceJoinRequest[]
+  aiUsageCount  AiUsage[]
+
+  @@map("users")
+}
+
+// ---------- 个体档案（F1.1 / F1.2，核心资产表）----------
+
+model Profile {
+  id                  String              @id @default(cuid())
+  name                String // 昵称，缺省自动生成如"橘猫·0824"
+  animalType          AnimalType          @default(CAT)
+  coatColor           String? // 毛色
+  bodySize            String? // 体型
+  specialMarks        String? // 特殊标记（耳标/剪耳/伤疤/花纹）
+  sterilizationStatus SterilizationStatus @default(UNKNOWN)
+  healthStatus        HealthStatus        @default(HEALTHY)
+  // 空间信息：只存街区级模糊坐标（PRD 6.4 位置隐私）
+  lastSeenAt          DateTime?
+  lastSeenLat         Float? // 街区级模糊纬度（客户端已模糊化）
+  lastSeenLng         Float?
+  lastSeenDesc        String? // 位置文字描述（如"东门花坛"）
+  season              Season?             @default(SPRING)
+
+  creatorId     String
+  creator       User    @relation("Creator", fields: [creatorId], references: [id])
+  avatarPhotoId String? @unique
+  avatarPhoto   Photo?  @relation("AvatarPhoto", fields: [avatarPhotoId], references: [id])
+
+  photos        Photo[]
+  records       Record[]
+  observations  Observation[]
+  spaceBindings SpaceProfile[]
+  wallpaperHist Wallpaper[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  version   Int      @default(1) // 同步用：每次修改 +1
+
+  @@index([creatorId])
+  @@index([updatedAt])
+  @@map("profiles")
+}
+
+// ---------- 照片（EXIF 已在客户端剥离，服务端只存 COS 地址）----------
+
+model Photo {
+  id        String   @id @default(cuid())
+  url       String // COS 访问地址
+  cosKey    String // COS 对象键（删除/审核用）
+  size      Int // 字节
+  width     Int?
+  height    Int?
+  moderated Boolean  @default(false) // 腾讯云内容安全审核是否通过
+  createdAt DateTime @default(now())
+
+  profileId String?
+  profile   Profile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+  // 被某档案用作头像的照片（与上面的 profile 是两条独立关系）
+  avatarOfProfile Profile? @relation("AvatarPhoto")
+  records   Record[]
+
+  @@index([profileId])
+  @@map("photos")
+}
+
+// ---------- 痕迹记录（F2.2，档案的时间序列数据源）----------
+
+model Record {
+  id      String     @id @default(cuid())
+  type    RecordType // 主类型（多选时 = 首个所选）
+  subTypes String? // 附加类型标签（逗号分隔 RecordType，2026-10-10「一次打卡记多件事」；不含主 type）
+  content String // 文字描述
+  season  Season? // 季节变化类记录用
+  // 位置（街区级模糊坐标，PRD 6.4）
+  lat     Float?
+  lng     Float?
+  locDesc String?
+  occurredAt DateTime // 观察发生时间（用户可回溯填写）
+  isDraft    Boolean  @default(false) // 离线草稿标记
+
+  authorId  String
+  author    User    @relation("Author", fields: [authorId], references: [id])
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  photos    Photo[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  version   Int      @default(1)
+
+  @@index([profileId, occurredAt(sort: Desc)])
+  @@index([authorId, updatedAt])
+  @@index([isDraft])
+  @@map("records")
+}
+
+// ---------- 我的观测对象（认领，F1.4 观察史入口）----------
+
+model Observation {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, profileId])
+  @@map("observations")
+}
+
+// ---------- 协作空间（F5.1–F5.3）----------
+
+model Space {
+  id          String  @id @default(cuid())
+  name        String // 小组名（如"东门花坛观测组"）
+  description String? // 完整简介（详情页展示，比列表的 tags 更长）
+  tags        String? // 小组标签，如"投喂 · 绝育跟踪 · 档案共享"（列表卡片展示用）
+  community   String? // 所属小区（列表搜索 / 详情统计用，如"大悦城东区"）
+  lat         Float? // 小组活动中心纬度（附近推荐距离计算，街区级模糊坐标）
+  lng         Float? // 小组活动中心经度
+  inviteCode  String  @unique // 6 位邀请码
+
+  ownerId String
+  owner   User   @relation("SpaceOwner", fields: [ownerId], references: [id])
+
+  members   SpaceMember[]
+  profiles  SpaceProfile[]
+  joinReqs  SpaceJoinRequest[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("spaces")
+}
+
+model SpaceMember {
+  spaceId String
+  space   Space   @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role    SpaceRole @default(MEMBER)
+
+  joinedAt DateTime @default(now())
+
+  @@id([spaceId, userId])
+  @@map("space_members")
+}
+
+model SpaceProfile {
+  spaceId   String
+  space     Space   @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  addedAt DateTime @default(now())
+
+  @@id([spaceId, profileId])
+  @@map("space_profiles")
+}
+
+model SpaceJoinRequest {
+  id      String           @id @default(cuid())
+  spaceId String
+  space   Space            @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message String? // 申请留言
+  status  JoinRequestStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([spaceId, userId])
+  @@map("space_join_requests")
+}
+
+// ---------- AI 使用计数（限流，同一用户每日上限）----------
+
+model AiUsage {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photoKey String // 识别对象指纹（同图缓存命中判断）
+  result  Json?  // 识别结果缓存
+  day     DateTime // 按天计数用（存当天零点）
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, day])
+  @@index([photoKey])
+  @@map("ai_usages")
+}
+
+// ---------- 壁纸导出记录（F4.x 亮点功能，统计用）----------
+
+model Wallpaper {
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  template  String // 模板名
+  createdAt DateTime @default(now())
+
+  @@map("wallpapers")
+}

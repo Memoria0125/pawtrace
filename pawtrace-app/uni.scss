@@ -1,0 +1,44 @@
+/* PawTrace 设计令牌 —— 低饱和米绿手账风
+ * 数值来源：2026-09-12 从「PawTrace 爪迹 - 线框与交互原型.pdf」S1 屏逐像素取样
+ * （设计画布 375×812 @2.957x，下列色值/尺寸均为实测值，不是估计）
+ */
+
+/* 主色板 */
+$paw-bg: #f0ebdf;          /* 米绿纸底（页面背景） */
+$paw-paper: #faf7f1;       /* 卡片纸白 */
+$paw-green: #8fa08b;       /* 苔绿（主色：按钮 / CTA 圆 / 已建档胶囊） */
+$paw-green-deep: #56674e;  /* 深苔绿（数字 / 强调） */
+$paw-green-pill: #55684f;  /* 选中态墨绿（TabBar 胶囊） */
+$paw-green-light: #c9d2c2; /* 浅苔绿（分隔 / 底纹） */
+$paw-ink: #3c4036;         /* 墨绿黑（标题 / 正文） */
+$paw-ink-light: #8a8a7e;   /* 灰绿（次要文字） */
+$paw-ink-icon: #8b8779;    /* 图标灰 */
+$paw-brown: #c68b6f;       /* 陶土棕（印章 / 警示强调） */
+$paw-brown-light: #e3c3b0;
+$paw-tape: #dfcf9f;        /* 芥末黄胶带 */
+$paw-mustard: #d9c389;     /* 芥末黄胶囊（待建档） */
+$paw-mustard-ink: #5f4f26; /* 芥末黄胶囊上的字 */
+$paw-deco: #e7dfd4;        /* 装饰圆 / 头像占位 */
+$paw-line: #e2ded0;        /* 极浅描边 */
+$paw-sage: #dfe2d2;        /* 浅绿豆（S5 拍照引导区底） */
+$paw-lavender: #e6e7eb;    /* 淡紫蓝（照片占位底） */
+$paw-lavender-ink: #757980;/* 照片占位上的文字 */
+$paw-placeholder: #a29e8f; /* 输入框占位符 */
+$paw-ink-mid: #6e6f58;     /* 中间墨色（选项胶囊文字 / 定位说明） */
+
+/* 版面节奏（S1 / S5 实测：页面左右留白 40rpx，卡片圆角 32rpx，主按钮高 88rpx） */
+$paw-gutter: 40rpx;
+$paw-radius: 32rpx;
+$paw-radius-pill: 999rpx;
+$paw-btn-h: 88rpx;
+$paw-tabbar-h: 120rpx;
+
+/* uni-app 内置变量（必须保留，页面可用 $paw-* 直接引用） */
+$uni-color-primary: $paw-green;
+$uni-color-success: $paw-green;
+$uni-color-warning: $paw-brown;
+$uni-color-error: #b96a5a;
+$uni-text-color: $paw-ink;
+$uni-text-color-grey: $paw-ink-light;
+$uni-bg-color: $paw-bg;
+$uni-border-color: $paw-green-light;

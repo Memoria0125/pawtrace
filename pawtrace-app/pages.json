@@ -1,0 +1,118 @@
+{
+  "easycom": {
+    "autoscan": true,
+    "custom": {}
+  },
+  "pages": [
+    {
+      "path": "pages/launch/launch",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/home/index",
+      "style": { "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/map/nearby",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/record/create",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/space/index",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/my/index",
+      "style": { "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/my/phone",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/login/login",
+      "style": { "navigationBarTitleText": "爪迹", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/login/register",
+      "style": { "navigationBarTitleText": "加入爪迹", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/profile/create",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/profile/detail",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/profile/edit",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/encounter/detail",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/profile/timeline",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/record/feeding",
+      "style": { "navigationBarTitleText": "今日投喂" }
+    },
+    {
+      "path": "pages/record/ai-parse",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/record/sci-card",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/history/index",
+      "style": { "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/space/join",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/space/detail",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/space/approve",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/space/board",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/space/lists",
+      "style": { "navigationBarTitleText": "", "navigationStyle": "custom" }
+    }
+  ],
+  "tabBar": {
+    "color": "#8B8779",
+    "selectedColor": "#F1ECDF",
+    "backgroundColor": "#FAF7F1",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/home/index", "text": "首页" },
+      { "pagePath": "pages/map/nearby", "text": "地图" },
+      { "pagePath": "pages/history/index", "text": "观察史" },
+      { "pagePath": "pages/my/index", "text": "我的" }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "爪迹",
+    "navigationBarBackgroundColor": "#F1ECDF",
+    "backgroundColor": "#F1ECDF"
+  }
+}

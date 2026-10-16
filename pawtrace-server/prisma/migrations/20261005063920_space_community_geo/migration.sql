@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `spaces` ADD COLUMN `community` VARCHAR(191) NULL,
+    ADD COLUMN `lat` DOUBLE NULL,
+    ADD COLUMN `lng` DOUBLE NULL;

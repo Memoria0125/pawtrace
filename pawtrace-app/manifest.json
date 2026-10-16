@@ -1,0 +1,67 @@
+{
+  "name": "PawTrace",
+  "appid": "",
+  "description": "流浪猫观测手账 — 拍照建档、时间轴成长史、地图点位",
+  "versionName": "0.1.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "app-plus": {
+    "usingComponents": true,
+    "nvueStyleCompiler": "uni-app",
+    "compilerVersion": 3,
+    "splashscreen": {
+      "alwaysShowBeforeRender": true,
+      "waiting": true,
+      "autoclose": true,
+      "delay": 0
+    },
+    "modules": {
+      "OAuth": {},
+      "Location": {},
+      "Camera": {}
+    },
+    "distribute": {
+      "android": {
+        "permissions": [
+          "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>",
+          "<uses-permission android:name=\"android.permission.CAMERA\"/>",
+          "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>"
+        ]
+      },
+      "ios": {
+        "privacyDescription": {
+          "NSCameraUsageDescription": "拍摄流浪猫照片用于建立观察档案",
+          "NSLocationWhenInUseUsageDescription": "记录观察点位（仅街区级模糊位置）",
+          "NSPhotoLibraryUsageDescription": "选择猫猫照片建立档案"
+        }
+      }
+    }
+  },
+  "quickapp": {},
+  "mp-weixin": {
+    "appid": "wxeff58729f6b46493",
+    "setting": { "urlCheck": false, "es6": true },
+    "usingComponents": true,
+    "permission": {
+      "scope.userLocation": {
+        "desc": "用于展示你附近的流浪猫点位（仅记录街区级模糊位置）"
+      }
+    },
+    "requiredPrivateInfos": ["getLocation"]
+  },
+  "h5": {
+    "devServer": {
+      "host": "0.0.0.0",
+      "port": 5173
+    },
+    "sdkConfigs": {
+      "maps": {
+        "qqmap": {
+          "key": "SRSBZ-VHPEG-5QXQ4-QOD6Q-QW3CQ-GPFGF"
+        }
+      }
+    }
+  },
+  "vueVersion": "3"
+}
