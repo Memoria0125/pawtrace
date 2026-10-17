@@ -14,13 +14,61 @@
 
 ## 📱 应用界面
 
-**AI 辅助打卡（记录痕迹页）**——拍照上传后多模态大模型自动识别猫咪特征，预填标签与观测草稿，人工确认后才入库：
+以下均为真机运行截图（Android 端）。
 
-<p align="center">
-  <img src="docs/screenshots/record-ai-assist.png" width="360" alt="AI辅助打卡界面" />
-</p>
+<h3>核心链路：地图发现 → AI 建档 → 记录痕迹</h3>
 
-> 图中可见的完整链路：选择行为类型（投喂/相遇/健康/外貌）→ 关联个体档案 → 拍照上传触发 AI 识别 → 特征标签预填（可修改）→ 自动生成观测草稿 → 确认保存。位置仅显示到小区级（隐私模糊化）。
+<table>
+  <tr>
+    <td align="center">
+      <img src="docs/screenshots/01-home-map.png" width="240" alt="首页观测台" /><br />
+      <sub><b>① 首页观测台</b><br />地图点位 + 发现附近的猫</sub>
+    </td>
+    <td align="center">
+      <img src="docs/screenshots/02-ai-recognize.png" width="240" alt="AI 识别" /><br />
+      <sub><b>② AI 识别</b><br />拍照后自动提取毛色 / 花纹 / 体态</sub>
+    </td>
+    <td align="center">
+      <img src="docs/screenshots/03-new-archive.png" width="240" alt="30秒建档" /><br />
+      <sub><b>③ 30 秒建档</b><br />识别结果预填表单，人工确认后入库</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/screenshots/04-archive-detail.png" width="240" alt="个体档案详情" /><br />
+      <sub><b>④ 个体档案</b><br />生命周期状态 + 关联点位</sub>
+    </td>
+    <td align="center">
+      <img src="docs/screenshots/05-record-trace.png" width="240" alt="痕迹记录录入" /><br />
+      <sub><b>⑤ 痕迹记录</b><br />选择行为类型并关联个体档案</sub>
+    </td>
+    <td align="center">
+      <img src="docs/screenshots/06-ai-parse.png" width="240" alt="AI 解析" /><br />
+      <sub><b>⑥ AI 解析</b><br />特征标签预填 + 观测草稿自动生成</sub>
+    </td>
+  </tr>
+</table>
+
+<h3>配套能力</h3>
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="docs/screenshots/07-science-card.png" width="240" alt="科普卡" /><br />
+      <sub><b>科普卡</b><br />识别完成后附带科学观察提示</sub>
+    </td>
+    <td align="center">
+      <img src="docs/screenshots/08-history.png" width="240" alt="观察史" /><br />
+      <sub><b>观察史</b><br />按时间轴沉淀的历史记录</sub>
+    </td>
+    <td align="center">
+      <img src="docs/screenshots/09-space-board.png" width="240" alt="协作空间看板" /><br />
+      <sub><b>协作空间</b><br />多人共护同一只猫的看板</sub>
+    </td>
+  </tr>
+</table>
+
+> **AI 链路全貌**：拍照上传 → 多模态大模型提取特征 → 结构化结果预填表单 → 用户确认/修改 → 入库。AI 只做辅助，最终内容由人确认；同一次识别还会与已有档案做外观相似度比对，返回疑似重复个体，避免重复建档。地图位置仅显示到小区级（坐标街区级模糊化后上传）。
 
 ## 🛠 技术栈
 
